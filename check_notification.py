@@ -4,7 +4,7 @@ from time import sleep
 import requests
 import telegram
 from dotenv import load_dotenv
-from requests.exceptions import ConnectionError, ReadTimeout
+from requests.exceptions import ConnectionError
 
 
 def get_checked_works(devman_token, timestamp):
@@ -46,25 +46,23 @@ def main():
     get_attempts_time = 6
     attempt_tries = 0
     timestamp = ''
-    while True:       
+    while True:
         try:
             lesson_info = get_checked_works(devman_token, timestamp)
             timestamp = ''
-            if lesson_info['status'] == 'timeout':
-                print('Сервер не отвечает')
+            if lesson_info['status'] == 'timeout':                
                 timestamp = lesson_info['timestamp_to_request']
             else:
                 timestamp = lesson_info['last_attempt_timestamp']
-                telegram_bot.send_message(tg_chat_id, prepare_message(lesson_info))            
-        except ReadTimeout:
-            print('Сервер не отвечает')
-        except ConnectionError:          
+                telegram_bot.send_message(
+                    tg_chat_id, prepare_message(lesson_info))
+        except ConnectionError:
             attempt_tries += 1
             if attempt_tries >= 5:
                 print('Ошибка соединения')
                 sleep(get_attempts_time)
                 attempt_tries = 0
-    
+
 
 if __name__ == "__main__":
 
