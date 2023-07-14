@@ -35,6 +35,7 @@ def send_checking_notification(telegram_bot, tg_chat_id, lesson_info):
 
 
 def prepare_message(lesson_info):
+    message = ''
     for lesson in lesson_info['new_attempts']:
         lesson_title = lesson['lesson_title']
         lesson_url = lesson['lesson_url']
@@ -42,7 +43,7 @@ def prepare_message(lesson_info):
             checking_result = 'К сожалению, в работе нашлись ошибки'
         else:
             checking_result = 'Преподавателю всё понравилось, можно приступать к следующему уроку'
-    message = f'''У вас проверили работу {lesson_title}
+        message = f'''У вас проверили работу {lesson_title}
                 {lesson_url}
                 {checking_result}
     '''
