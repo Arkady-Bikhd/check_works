@@ -5,10 +5,8 @@ import requests
 import telegram
 from dotenv import load_dotenv
 from requests.exceptions import ConnectionError, ReadTimeout
-from retry import retry
 
 
-@retry(ConnectionError, tries=3, delay=60, backoff=5)
 def get_checked_works(devman_token, timestamp):
     headers = {
         'Authorization': f'Token {devman_token}',
@@ -45,9 +43,10 @@ def main():
     telegram_token = environ['TELEGRAM_TOKEN']
     tg_chat_id = environ['TG_CHAT_ID']
     telegram_bot = telegram.Bot(telegram_token)
-    get_attempts_time = 60
+    get_attempts_time = 6
+    attempt_tries = 0
     timestamp = ''
-    while True:
+    while True:       
         try:
             lesson_info = get_checked_works(devman_token, timestamp)
             timestamp = ''
@@ -59,10 +58,13 @@ def main():
                 telegram_bot.send_message(tg_chat_id, prepare_message(lesson_info))            
         except ReadTimeout:
             print('Сервер не отвечает')
-        except ConnectionError:
-            print('Ошибка соединения')
-            sleep(get_attempts_time)
-
+        except ConnectionError:          
+            attempt_tries += 1
+            if attempt_tries >= 5:
+                print('Ошибка соединения')
+                sleep(get_attempts_time)
+                attempt_tries = 0
+    
 
 if __name__ == "__main__":
 
