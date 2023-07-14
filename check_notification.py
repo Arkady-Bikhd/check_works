@@ -8,7 +8,7 @@ from requests.exceptions import ConnectionError, ReadTimeout
 from retry import retry
 
 
-@retry(ConnectionError, tries=3, delay=1, backoff=5)
+@retry(ConnectionError, tries=3, delay=60, backoff=5)
 def get_checked_works(devman_token, timestamp):
     headers = {
         'Authorization': f'Token {devman_token}',
@@ -21,17 +21,6 @@ def get_checked_works(devman_token, timestamp):
     response.raise_for_status()
     lesson_info = response.json()
     return lesson_info
-
-
-def send_checking_notification(telegram_bot, tg_chat_id, lesson_info):
-    timestamp = ''
-    if lesson_info['status'] == 'timeout':
-        print('Сервер не отвечает')
-        timestamp = lesson_info['timestamp_to_request']
-    else:
-        timestamp = lesson_info['last_attempt_timestamp']
-        telegram_bot.send_message(tg_chat_id, prepare_message(lesson_info))
-    return timestamp
 
 
 def prepare_message(lesson_info):
@@ -61,8 +50,13 @@ def main():
     while True:
         try:
             lesson_info = get_checked_works(devman_token, timestamp)
-            timestamp = send_checking_notification(
-                telegram_bot, tg_chat_id, lesson_info)
+            timestamp = ''
+            if lesson_info['status'] == 'timeout':
+                print('Сервер не отвечает')
+                timestamp = lesson_info['timestamp_to_request']
+            else:
+                timestamp = lesson_info['last_attempt_timestamp']
+                telegram_bot.send_message(tg_chat_id, prepare_message(lesson_info))            
         except ReadTimeout:
             print('Сервер не отвечает')
         except ConnectionError:
