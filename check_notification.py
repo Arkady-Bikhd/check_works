@@ -8,26 +8,6 @@ from requests.exceptions import ConnectionError, ReadTimeout
 from retry import retry
 
 
-def main():
-    load_dotenv()
-    devman_token = environ['DEVMAN_TOKEN']
-    telegram_token = environ['TELEGRAM_TOKEN']
-    tg_chat_id = environ['TG_CHAT_ID']
-    telegram_bot = telegram.Bot(telegram_token)
-    get_attempts_time = 60
-    timestamp = ''
-    while True:
-        try:
-            lesson_info = get_checked_works(devman_token, timestamp)
-            timestamp = send_checking_notification(
-                telegram_bot, tg_chat_id, lesson_info)
-        except ReadTimeout:
-            print('Сервер не отвечает')
-        except ConnectionError:
-            print('Ошибка соединения')
-            sleep(get_attempts_time)
-
-
 @retry(ConnectionError, tries=3, delay=1, backoff=5)
 def get_checked_works(devman_token, timestamp):
     headers = {
@@ -67,6 +47,26 @@ def prepare_message(lesson_info):
                 {checking_result}
     '''
     return message
+
+
+def main():
+    load_dotenv()
+    devman_token = environ['DEVMAN_TOKEN']
+    telegram_token = environ['TELEGRAM_TOKEN']
+    tg_chat_id = environ['TG_CHAT_ID']
+    telegram_bot = telegram.Bot(telegram_token)
+    get_attempts_time = 60
+    timestamp = ''
+    while True:
+        try:
+            lesson_info = get_checked_works(devman_token, timestamp)
+            timestamp = send_checking_notification(
+                telegram_bot, tg_chat_id, lesson_info)
+        except ReadTimeout:
+            print('Сервер не отвечает')
+        except ConnectionError:
+            print('Ошибка соединения')
+            sleep(get_attempts_time)
 
 
 if __name__ == "__main__":
