@@ -4,7 +4,7 @@ from time import sleep
 import requests
 import telegram
 from dotenv import load_dotenv
-from requests.exceptions import ConnectionError
+from requests.exceptions import ConnectionError, ReadTimeout
 
 
 def get_checked_works(devman_token, timestamp):
@@ -15,7 +15,7 @@ def get_checked_works(devman_token, timestamp):
         'timestamp': timestamp,
     }
     url = 'https://dvmn.org/api/long_polling/'
-    response = requests.get(url, headers=headers, params=params)
+    response = requests.get(url, headers=headers, params=params, timeout=(1, 90.001))
     response.raise_for_status()
     lesson_info = response.json()
     return lesson_info
@@ -62,6 +62,8 @@ def main():
                 print('Ошибка соединения')
                 sleep(get_attempts_time)
                 attempt_tries = 0
+        except ReadTimeout:
+            print('Превышено время ожидания')
 
 
 if __name__ == "__main__":
