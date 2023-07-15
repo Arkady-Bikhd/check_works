@@ -15,7 +15,7 @@ def get_checked_works(devman_token, timestamp):
         'timestamp': timestamp,
     }
     url = 'https://dvmn.org/api/long_polling/'
-    response = requests.get(url, headers=headers, params=params, timeout=(1, 90.001))
+    response = requests.get(url, headers=headers, params=params, timeout=(1, 91))
     response.raise_for_status()
     lesson_info = response.json()
     return lesson_info
