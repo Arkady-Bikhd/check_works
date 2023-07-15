@@ -30,10 +30,10 @@ def prepare_message(lesson_info):
             checking_result = 'К сожалению, в работе нашлись ошибки'
         else:
             checking_result = 'Преподавателю всё понравилось, можно приступать к следующему уроку'
-        message = f'''У вас проверили работу {lesson_title}
+        message += f'''У вас проверили работу {lesson_title}
                 {lesson_url}
                 {checking_result}
-    '''
+        '''
     return message
 
 
