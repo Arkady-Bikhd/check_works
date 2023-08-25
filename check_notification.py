@@ -8,6 +8,9 @@ from dotenv import load_dotenv
 from requests.exceptions import ConnectionError, ReadTimeout
 
 
+logger = logging.getLogger('Check_works')
+
+
 class TelegramLogsHandler(logging.Handler):
 
     def __init__(self, tg_bot, chat_id):
@@ -57,8 +60,7 @@ def main():
     tg_chat_id = environ['TG_CHAT_ID']
     notice_bot_token = environ['TG_BOT_TOKEN']
     telegram_bot = telegram.Bot(telegram_token)
-    notice_bot = telegram.Bot(notice_bot_token) 
-    logger = logging.getLogger('Check_works')
+    notice_bot = telegram.Bot(notice_bot_token)     
     logger.setLevel('INFO')
     logger.addHandler(
         TelegramLogsHandler(
