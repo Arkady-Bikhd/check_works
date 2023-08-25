@@ -55,12 +55,13 @@ def main():
     devman_token = environ['DEVMAN_TOKEN']
     telegram_token = environ['TELEGRAM_TOKEN']
     tg_chat_id = environ['TG_CHAT_ID']
+    notice_bot_token = environ['TG_BOT_TOKEN']
     telegram_bot = telegram.Bot(telegram_token)
     logger = logging.getLogger('Check_works')
     logger.setLevel('INFO')
     logger.addHandler(
         TelegramLogsHandler(
-            tg_bot=telegram_bot,
+            tg_bot=notice_bot_token,
             chat_id=tg_chat_id,
         )
     )
