@@ -2,9 +2,22 @@ from os import environ
 from time import sleep
 
 import requests
+import logging
 import telegram
 from dotenv import load_dotenv
 from requests.exceptions import ConnectionError, ReadTimeout
+
+
+class TelegramLogsHandler(logging.Handler):
+
+    def __init__(self, tg_bot, chat_id):
+        super().__init__()
+        self.chat_id = chat_id
+        self.tg_bot = tg_bot
+
+    def emit(self, record):
+        log_entry = self.format(record)
+        self.tg_bot.send_message(chat_id=self.chat_id, text=log_entry)
 
 
 def get_checked_works(devman_token, timestamp):
@@ -43,11 +56,20 @@ def main():
     telegram_token = environ['TELEGRAM_TOKEN']
     tg_chat_id = environ['TG_CHAT_ID']
     telegram_bot = telegram.Bot(telegram_token)
+    logger = logging.getLogger('Check_works')
+    logger.setLevel('INFO')
+    logger.addHandler(
+        TelegramLogsHandler(
+            tg_bot=telegram_bot,
+            chat_id=tg_chat_id,
+        )
+    )
     get_attempts_time = 6
     attempt_tries = 0
     timestamp = ''
     while True:
         try:
+            logger.info('Бот запущен')
             lesson_info = get_checked_works(devman_token, timestamp)
             timestamp = ''
             if lesson_info['status'] == 'timeout':                
@@ -56,14 +78,16 @@ def main():
                 timestamp = lesson_info['last_attempt_timestamp']
                 telegram_bot.send_message(
                     tg_chat_id, prepare_message(lesson_info))
-        except ConnectionError:
+        except ConnectionError as err:
             attempt_tries += 1
             if attempt_tries >= 5:
-                print('Ошибка соединения')
+                logger.info('Ошибка соединения')
+                logger.error(err)
                 sleep(get_attempts_time)
                 attempt_tries = 0
-        except ReadTimeout:
-            print('Превышено время ожидания')
+        except ReadTimeout as err:
+            logger.info('Превышено время ожидания')
+            logger.error(err)
 
 
 if __name__ == "__main__":
