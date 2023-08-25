@@ -57,7 +57,7 @@ def main():
     tg_chat_id = environ['TG_CHAT_ID']
     notice_bot_token = environ['TG_BOT_TOKEN']
     telegram_bot = telegram.Bot(telegram_token)
-    notice_bot = telegram.bot(notice_bot_token) 
+    notice_bot = telegram.Bot(notice_bot_token) 
     logger = logging.getLogger('Check_works')
     logger.setLevel('INFO')
     logger.addHandler(
