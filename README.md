@@ -26,12 +26,12 @@ TELEGRAM_CHAT_ID=<YOUR_CHAT_ID_ON_TELEGRAM>
 2. Переходим в папку со скаченным кодом и запускаем командную строку.
 3. Загружаем в командную строку образ из докерхаба
 ```pycon
-docker pull capark74/chekc_works:latest
+docker pull capark74/chekc_bot:latest
 ```
 5. Запуск докер контейнера
 
 ```pycon
-docker run --rm --env TG_BOT_TOKEN='5293067707:AAH....' --env DEVMAN_TOKEN='Token ebbb7.....' --env CHAT_ID=7048... check_works
+docker run --rm --env TG_BOT_TOKEN='5293067707:AAH....' --env DEVMAN_TOKEN='Token ebbb7.....' --env CHAT_ID=7048... check_bot
 ```
 
 Вы должны увидеть результат:
