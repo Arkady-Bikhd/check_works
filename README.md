@@ -31,7 +31,7 @@ docker pull capark74/chekc_bot:latest
 5. Запуск докер контейнера
 
 ```pycon
-docker run --rm --env TG_BOT_TOKEN='5293067707:AAH....' --env DEVMAN_TOKEN='Token ebbb7.....' --env CHAT_ID=7048... check_bot
+docker run --rm --env TELEGRAM_TOKEN='5293067707:AAH....' --env DEVMAN_TOKEN='Token ebbb7.....' --env TELEGRAM_CHAT_ID=7048... check_bot
 ```
 
 Вы должны увидеть результат:
